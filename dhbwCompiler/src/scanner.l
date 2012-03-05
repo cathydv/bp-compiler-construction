@@ -22,3 +22,47 @@ number [1-9][0-9]*|0
 identifier [_a-zA-Z][_0-9a-zA-Z]*
 
 %%
+
+\n	/* new line */
+[\t ]+	/* ignore white spaces */
+
+do { return DO; }
+else { return ELSE; }
+if { return IF; }
+int { return INT; }
+return { return RETURN; }
+void { return VOID; }
+while { return WHILE; }
+
+; { return SEMICOLON; }
+: { return COLON; }
+, { return COMMA; }
+
+&& { return LOGICAL_AND; }
+\|\| { return LOGICAL_OR; }
+! { return LOGICAL_NOT; }
+= { return ASSIGN; }
+!= { return NE; }
+==  { return EQ; }
+\> { return GT; }
+\>= { return GTEQ; }
+\< { return LS; }
+\<= { return LSEQ; }
+
+\+ { return PLUS; }
+\- { return MINUS; }
+\* { return MUL; }
+\/ { return DIV; }
+% { return MOD; }
+
+\{ { return BRACE_OPEN; }
+\} { return BRACE_CLOSE; }
+\( { return PARA_OPEN; }
+\) { return PARA_CLOSE; }
+\[ { return BRACKET_OPEN; }
+\] { return BRACKET_CLOSE; }
+
+{identifier} { return ID; }
+{number} { return NUM; }
+							
+<<EOF>>		{ return 0; }
