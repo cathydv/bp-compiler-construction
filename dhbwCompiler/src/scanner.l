@@ -18,7 +18,7 @@
 /* finish after scanning the provided file */
 %option noyywrap		
 
-number [1-9][0-9]*|0
+number [1-9][0-9]*|0+
 identifier [_a-zA-Z][_0-9a-zA-Z]*
 
 %%
