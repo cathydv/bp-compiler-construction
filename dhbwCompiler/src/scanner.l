@@ -64,5 +64,6 @@ while { return WHILE; }
 
 {identifier} { return ID; }
 {number} { return NUM; }
+. {printf("invalid char"); }
 							
 <<EOF>>		{ return 0; }
