@@ -52,8 +52,8 @@ while { return WHILE; }
 \+ { return PLUS; }
 \- { return MINUS; }
 \* { return MUL; }
-\/ { return DIV; }
-% { return MOD; }
+\<< { return SHIFT_LEFT; }
+\>> { return SHIFT_RIGHT; }
 
 \{ { return BRACE_OPEN; }
 \} { return BRACE_CLOSE; }

@@ -30,12 +30,16 @@
 %token NUM
 
 /* TODO: add associativity and precedence so that the 256 shift-reduce vanish */
-%token ASSIGN
-%token LOGICAL_OR LOGICAL_NOT LOGICAL_AND 
-%token EQ NE LS LSEQ GTEQ GT
-%token PLUS MINUS MUL DIV MOD
-%token NOT UNARY_MINUS UNARY_PLUS
-%token BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
+%right ASSIGN
+%left LOGICAL_OR
+%left LOGICAL_AND 
+%left EQ NE
+%left LS LSEQ GTEQ GT
+%left SHIFT_LEFT SHIFT_RIGHT
+%left PLUS MINUS 
+%left MUL
+%right LOGICAL_NOT UNARY_MINUS
+%left BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
 
 %%
 
