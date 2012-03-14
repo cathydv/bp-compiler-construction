@@ -29,7 +29,7 @@
 %token ID
 %token NUM
 
-/* TODO: add associativity and precedence so that the 256 shift-reduce vanish */
+
 %right ASSIGN
 %left LOGICAL_OR
 %left LOGICAL_AND 
@@ -38,7 +38,7 @@
 %left SHIFT_LEFT SHIFT_RIGHT
 %left PLUS MINUS 
 %left MUL
-%right LOGICAL_NOT UNARY_MINUS
+%right LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 %left BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
 
 %%
@@ -231,8 +231,8 @@ expression
      | expression PLUS expression
      | expression MINUS expression
      | expression MUL expression
-     | expression DIV expression 
-     | expression MOD expression 
+     | expression SHIFT_LEFT expression 
+     | expression SHIFT_RIGHT expression 
      | MINUS expression %prec UNARY_MINUS
      | ID BRACKET_OPEN primary BRACKET_CLOSE
      | PARA_OPEN expression PARA_CLOSE

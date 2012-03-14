@@ -3,7 +3,7 @@
  */
 
 %{
-	#include "parser.h"
+	#include "parser.tab.h"
 %}
 
 /* 
@@ -18,7 +18,7 @@
 /* finish after scanning the provided file */
 %option noyywrap		
 
-number [1-9][0-9]*|0+
+number [1-9][0-9]*|0
 identifier [_a-zA-Z][_0-9a-zA-Z]*
 
 %%
@@ -62,8 +62,9 @@ while { return WHILE; }
 \[ { return BRACKET_OPEN; }
 \] { return BRACKET_CLOSE; }
 
-{identifier} { return ID; }
-{number} { return NUM; }
+{number} { printf("num");return NUM; }
+{identifier} { printf("ID");return ID; }
+
 . {printf("invalid char"); }
 							
 <<EOF>>		{ return 0; }
