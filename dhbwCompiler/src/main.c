@@ -254,18 +254,22 @@ int process_options (int argc, char *argv[]) {
 int main (int argc, char *argv[]) {
   /* the resource manager must be initialized before any 
    * further actions are implemented */
-  rm_init(&resource_mgr);
 
-  if (process_options(argc, argv) == 1) {
-    rm_cleanup_resources(&resource_mgr);
-    exit(EXIT_FAILURE);
-  }
+  yyparse();
 
-  printf("Input: %s\n", cc_options.input_file);
-  printf("Output: %s\n", cc_options.output_file);
-  printf("IR: %s\n", cc_options.ir_file);
+//  rm_init(&resource_mgr);
+//
+//  if (process_options(argc, argv) == 1) {
+//    rm_cleanup_resources(&resource_mgr);
+//    exit(EXIT_FAILURE);
+//  }
+//
+//  printf("Input: %s\n", cc_options.input_file);
+//  printf("Output: %s\n", cc_options.output_file);
+//  printf("IR: %s\n", cc_options.ir_file);
+//
+//  rm_cleanup_resources(&resource_mgr);
 
-  rm_cleanup_resources(&resource_mgr);
   return 0;
 }
 
