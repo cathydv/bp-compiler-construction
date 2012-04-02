@@ -1,33 +1,33 @@
-/* 
- * scanner.l - Scanner utility for the DHBW compiler
+/*
+ * scanner.l - Scanner utility for the BA compiler
  */
 
 %{
-	#include "parser.tab.h"
-	#include <stdio.h>
-	#include <string.h>
+#include "parser.tab.h"
+#include <stdio.h>
+#include <string.h>
+
 %}
 
-/* 
+/*
  * Default setting for flex which indicates that yytext, which is one of the main connections
- * between the scanner and parser, is handled as pointer of char instead of an array of char. 
+ * between the scanner and parser, is handled as pointer of char instead of an array of char.
 */
-%pointer	
+%pointer
 
 /* save the line number of terminals */
 %option yylineno
 
 /* finish after scanning the provided file */
-%option noyywrap		
+%option noyywrap
 
-number 			[1-9][0-9]*|0
-identifier 		[_a-zA-Z][_0-9a-zA-Z]*
-comment			\/\/.*\n
-
+identifier [_a-zA-Z][_a-zA-Z0-9]*
+number [1-9][0-9]*|0
+comment \/\/.*\n
 %%
 
-\n	/* new line */
-[\t ]+	/* ignore white spaces */
+\n /* new line */
+[\t ]+ /* ignore white spaces */
 
 do { return DO; }
 else { return ELSE; }
@@ -46,7 +46,7 @@ while { return WHILE; }
 ! { return LOGICAL_NOT; }
 = { return ASSIGN; }
 != { return NE; }
-==  { return EQ; }
+== { return EQ; }
 \> { return GT; }
 \>= { return GTEQ; }
 \< { return LS; }
@@ -55,8 +55,8 @@ while { return WHILE; }
 \+ { return PLUS; }
 \- { return MINUS; }
 \* { return MUL; }
-\<< { return SHIFT_LEFT; }
-\>> { return SHIFT_RIGHT; }
+\<\< {return SHIFT_LEFT;}
+\>\> {return SHIFT_RIGHT;}
 
 \{ { return BRACE_OPEN; }
 \} { return BRACE_CLOSE; }
@@ -66,23 +66,17 @@ while { return WHILE; }
 \] { return BRACKET_CLOSE; }
 
 {identifier} { 
-	printf("ID"); 
-	yylval.id = strdup(yytext);
-	return ID;
+yylval.id = strdup(yytext);
+//printf("id");
+return ID;
 }
-
 {number} { 
-	printf("NUM"); 
-	yylval.num = atoi(yytext);
-	return NUM;
+yylval.num = atoi(yytext);
+//printf("num");
+return NUM;
 }
+{comment}
 
-{comment} { 
-	printf("comment");
-}
+<<EOF>> { return 0; }
 
-. {
-printf("invalid char"); 
-}
-							
-<<EOF>>		{ return 0; }
+.
