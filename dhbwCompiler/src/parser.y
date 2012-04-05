@@ -14,6 +14,9 @@
 %union{
 	int num;
 	char *id;
+	struct symbolVar *sInt;
+	struct symbolFunc *sFunc;
+	struct symbolFuncParamList *sPList;
 }
 
 %debug
@@ -36,8 +39,8 @@
 %token COLON COMMA SEMICOLON
 %token BRACE_OPEN BRACE_CLOSE
 
-%token ID
-%token NUM
+%token <id>ID
+%token <num>NUM
 
 %right ASSIGN 
 %left  LOGICAL_OR
@@ -49,6 +52,8 @@
 %left  MUL
 %right LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 %left  BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
+
+%type <sFunc>function_declaration
 
 %%
 
@@ -65,7 +70,7 @@ program_element
      : variable_declaration SEMICOLON		/*Nothing to be done here*/
      | function_declaration SEMICOLON		/*Nothing to be done here*/
      | function_definition					/*Nothing to be done here*/
-     | SEMICOLON						/*Nothing to be done here*/
+     | SEMICOLON							/*Nothing to be done here*/
      ;
      
 type
@@ -82,11 +87,6 @@ identifier_declaration
      : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE 
      | ID 
      ;
-     
-/*	Because of the new Grammar we don't have do delete the variable because functions are imediadly recongnised. Will stay here, if needed, for a few revesions..
-function_signature
-     : identifier_declaration PARA_OPEN {$$ = putFunc ($1->name, 1);deleteInt ($1->name)}
-     ;*/
 
 function_definition
      : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN 	stmt_list BRACE_CLOSE 
@@ -108,7 +108,7 @@ function_parameter
      ;
 
 stmt_list
-     : /* empty: epsilon */
+     : // empty: epsilon
      | stmt_list stmt					/*Nothing to be done here*/
      ;
 
