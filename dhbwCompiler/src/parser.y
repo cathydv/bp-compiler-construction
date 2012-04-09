@@ -4,7 +4,7 @@
 
 %{
 	#include "include/utlist.h" 
-	#include "symboltable.h"
+	#include "table_dummy.h"
 	#include "ir_code_generation.h"
 	#include <stdio.h>
 	
@@ -14,9 +14,7 @@
 %union{
 	int num;
 	char *id;
-	struct symbolVar *sInt;
-	struct symbolFunc *sFunc;
-	struct symbolFuncParamList *sPList;
+	struct Element *Elem;
 }
 
 %debug
@@ -34,7 +32,7 @@
 
 %token DO WHILE
 %token IF ELSE
-%token INT VOID
+%token <id>INT <id>VOID
 %token RETURN
 %token COLON COMMA SEMICOLON
 %token BRACE_OPEN BRACE_CLOSE
@@ -53,17 +51,26 @@
 %right LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 %left  BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
 
-%type <sFunc>function_declaration
+%type <Elem> function_call_parameters
+%type <Elem> function_definition
+%type <Elem> function_parameter_list
+%type <Elem> function_declaration
+%type <Elem> function_call
+%type <num> type
+%type <Elem> function_parameter
+%type <Elem> identifier_declaration
+%type <Elem> expression
+%type <Elem> primary
 
 %%
 
 program
-     : program_element_list	{printf("progelementlist");}			/*Nothing to be done here*/
+     : program_element_list			/*Nothing to be done here*/
      ;
 
 program_element_list
      : program_element_list program_element 	
-     | program_element 				
+     | program_element {printf("--- DEBUG: "); debug_printAllElems();printf("---");} 				
      ;
 
 program_element
@@ -74,18 +81,18 @@ program_element
      ;
      
 type
-     : INT
-     | VOID
+     : INT  {$$=1}
+     | VOID {$$=0}
      ;
 
 variable_declaration
      : variable_declaration COMMA identifier_declaration	/*Nothing to be done here*/
-     | type identifier_declaration 
+     | type identifier_declaration { if($1==0) { printf("ERROR -- your variable needs a type\n"); } } 
      ;
 	
 identifier_declaration
-     : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE 
-     | ID 
+     : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE
+     | ID {$$ = putElem($1)}
      ;
 
 function_definition
@@ -128,6 +135,7 @@ stmt_block
      ;
 //the shift/reduce error which occurs here is expected. nothing to see here move along
 //changed the grammar slightly to handle the goto statements easier.
+
 stmt_conditional
      : IF PARA_OPEN expression PARA_CLOSE stmt_conditional_r //stmt
      //| IF PARA_OPEN expression {addif($3);addifgoto();} PARA_CLOSE stmt ELSE stmt	//{addif($3);addifgoto();}
@@ -148,7 +156,7 @@ stmt_loop
  * assignment operators.expression
  */									
 expression								// 0 = "false", nonzero = "true"
-     : expression ASSIGN expression	{printf("equals");}			
+     : expression ASSIGN expression			
      | expression LOGICAL_OR expression	
      | expression LOGICAL_AND expression
      | LOGICAL_NOT expression		
@@ -158,13 +166,13 @@ expression								// 0 = "false", nonzero = "true"
      | expression LSEQ expression 	
      | expression GTEQ expression 
      | expression GT expression	
-     | expression PLUS expression				{printf("DEBUG -- function call");}
-     | expression MINUS expression				{printf("DEBUG -- function call");}
-     | expression MUL expression				{printf("DEBUG -- function call");}
-     | MINUS expression %prec UNARY_MINUS		{printf("DEBUG -- function call");}
-     | ID BRACKET_OPEN primary BRACKET_CLOSE	{printf("DEBUG -- function call");}
-     | PARA_OPEN expression PARA_CLOSE			{printf("DEBUG -- para_open para_close");}
-     | function_call							{printf("DEBUG -- function call");}
+     | expression PLUS expression				
+     | expression MINUS expression				
+     | expression MUL expression				
+     | MINUS expression %prec UNARY_MINUS		
+     | ID BRACKET_OPEN primary BRACKET_CLOSE	
+     | PARA_OPEN expression PARA_CLOSE			
+     | function_call							
      | primary									
      ;
 
@@ -174,7 +182,7 @@ primary
      ;
 
 function_call
-      : ID PARA_OPEN PARA_CLOSE					{printf("DEBUG -- para_open para_close");}	
+      : ID PARA_OPEN PARA_CLOSE						
       | ID PARA_OPEN function_call_parameters PARA_CLOSE	
       ;
 
@@ -189,15 +197,4 @@ void yyerror (const char *msg)
 {
 	printf("ERROR: %s\n", msg);
 	//return 0;
-}
-
-int main()
-{
-	yyparse();
-	return 0;
-}
-
-void print_debug(const char *msg)
-{
-	printf("ERROR: %s\n", msg);
 }

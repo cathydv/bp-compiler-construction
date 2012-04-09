@@ -33,7 +33,23 @@ struct symbolFuncParamList{
 	int count;
 };
 
+
+int func_exists();
+int var_exists();
+
+int push_func();
+int push_var();
+
+int pop_func();
+int pop_var();
+
+void get
+
 void printallfunctions();
+void printallvars();
+
+void init_table();
+
 
 #endif
 
