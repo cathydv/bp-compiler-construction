@@ -8,6 +8,7 @@ C_SRCS += \
 ../src/ir_code_generation.c \
 ../src/lex.yy.c \
 ../src/main.c \
+../src/parser.tab.c \
 ../src/resource_manager.c \
 ../src/symboltable.c 
 
@@ -16,6 +17,7 @@ OBJS += \
 ./src/ir_code_generation.o \
 ./src/lex.yy.o \
 ./src/main.o \
+./src/parser.tab.o \
 ./src/resource_manager.o \
 ./src/symboltable.o 
 
@@ -24,6 +26,7 @@ C_DEPS += \
 ./src/ir_code_generation.d \
 ./src/lex.yy.d \
 ./src/main.d \
+./src/parser.tab.d \
 ./src/resource_manager.d \
 ./src/symboltable.d 
 

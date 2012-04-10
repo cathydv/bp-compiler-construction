@@ -8,21 +8,50 @@
 #ifndef TABLE_DUMMY_H_
 #define TABLE_DUMMY_H_
 
-struct Element{
-	char *name;
-	int size;
+#include <stdio.h>
+
+
+struct symbolVar{
+	char* name;
+	char* returntype;
 	int isArray;
-	int isFunc;
 	int isParam;
-	struct Element *scope;
+	int isTemp;
+	int size;
+	int* stackpointer;        //tbd -- offset
+	struct symbolFunc* scope; //points to function
+	struct symbolVar* next;   //points to next variable
+};
 
-struct Element *next;};
+struct symbolFunc{
+	char* name;
+	char* returnType;
+	int isPrototype;
+	int paramcount;
+	struct symbolVar *param;  //points on parameter List
+	struct symbolFunc* next;
+};
 
-int Elem_exists(struct Element *Elem);
-void putElem(struct Element *Elem);
-struct Element* getElem();
-void debug_printAllElems();
+struct symbolFuncParamList{
+	struct symbolVar *first;
+	int count;
+};
 
 
+int func_exists();
+int var_exists();
+
+int push_func();
+int push_var();
+
+int pop_func();
+int pop_var();
+
+void get
+
+void printallfunctions();
+void printallvars();
+
+void init_table();
 
 #endif /* TABLE_DUMMY_H_ */

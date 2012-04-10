@@ -6,50 +6,33 @@
  *  Created on: Apr 3, 2012
  *      Author: NA
  */
+#include<stdio.h>
 
-struct symbolVar{
-	char* name;
-	char* returntype;
-	int isArray;
-	int isParam;
-	int isTemp;
-	int size;
-	int* stackpointer;        //tbd -- offset
-	struct symbolFunc* scope; //points to function
-	struct symbolVar* next;   //points to next variable
+typedef struct symbol {
+    char *name;
+    int size;
+    int isArray;
+    int isFunc;
+    int isParam;
+    struct Symbol *scope;
+    struct symbol *next; /* needed for singly- or doubly-linked lists */
+} symbol;
+
+int exists_Sym(struct Symbol *Sym);
+
+void insert_Sym(char const *name){
+	printf("\n inserting symbol %s \n",name);
+}
+
+struct Symbol* find_Sym();
+
+void debug_printSymbolTable(){
+	printf("\n\n - debug_printAllSymbols - \n\n");
+}
+
+init_table(){
+	symbol *head = NULL;
 };
-
-struct symbolFunc{
-	char* name;
-	char* returnType;
-	int isPrototype;
-	int paramcount;
-	struct symbolVar *param;  //points on parameter List
-	struct symbolFunc* next;
-};
-
-struct symbolFuncParamList{
-	struct symbolVar *first;
-	int count;
-};
-
-
-int func_exists();
-int var_exists();
-
-int push_func();
-int push_var();
-
-int pop_func();
-int pop_var();
-
-void get
-
-void printallfunctions();
-void printallvars();
-
-void init_table();
-
 
 #endif
 

@@ -1,10 +1,12 @@
 /* 
  * parser.y - Parser utility for the DHBW compiler
+ * bison -d -b parser parser.y -t
+ * gcc parser.tab.c lex.yy.c -lfl -lm -o bin32
  */
 
 %{
 	#include "include/utlist.h" 
-	#include "table_dummy.h"
+	#include "symboltable.h"
 	#include "ir_code_generation.h"
 	#include <stdio.h>
 	
@@ -14,7 +16,7 @@
 %union{
 	int num;
 	char *id;
-	struct Element *Elem;
+	struct Symbol *Sym;
 }
 
 %debug
@@ -51,16 +53,17 @@
 %right LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 %left  BRACKET_OPEN BRACKET_CLOSE PARA_OPEN PARA_CLOSE
 
-%type <Elem> function_call_parameters
-%type <Elem> function_definition
-%type <Elem> function_parameter_list
-%type <Elem> function_declaration
-%type <Elem> function_call
+
+%type <Sym> function_call_parameters
+%type <Sym> function_definition
+%type <Sym> function_parameter_list
+%type <Sym> function_declaration
+%type <Sym> function_call
 %type <num> type
-%type <Elem> function_parameter
-%type <Elem> identifier_declaration
-%type <Elem> expression
-%type <Elem> primary
+%type <Sym> function_parameter
+%type <Sym> identifier_declaration
+%type <Sym> expression
+%type <Sym> primary
 
 %%
 
@@ -69,8 +72,8 @@ program
      ;
 
 program_element_list
-     : program_element_list program_element 	
-     | program_element {printf("--- DEBUG: "); debug_printAllElems();printf("---");} 				
+     : program_element_list program_element { debug_printSymbolTable();} 	
+     | program_element 				
      ;
 
 program_element
@@ -92,7 +95,7 @@ variable_declaration
 	
 identifier_declaration
      : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {$$ = putElem($1)}
+     | ID {insert_Sym($1);}
      ;
 
 function_definition
@@ -177,8 +180,8 @@ expression								// 0 = "false", nonzero = "true"
      ;
 
 primary
-     : NUM 										{printf("DEBUG -- num");}
-     | ID  										{printf("DEBUG -- id");}
+     : NUM 										{printf("-num-");}
+     | ID  										{printf("-id-");}
      ;
 
 function_call
@@ -197,4 +200,9 @@ void yyerror (const char *msg)
 {
 	printf("ERROR: %s\n", msg);
 	//return 0;
+}
+
+int main(){
+	yyparse();
+	return 0;
 }

@@ -5,4 +5,6 @@
  *      Author: NA
  */
 
+#include "symboltable.h"
+
 

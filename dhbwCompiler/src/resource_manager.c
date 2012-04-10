@@ -16,7 +16,8 @@ resource_mgr_t resource_mgr;
  */
 void rm_cleanup_resources (resource_mgr_t *mgr) {
   /* call the handlers in reverese order */
-  for (int i = mgr->num_entries-1; i >= 0; i--) {
+	int i = 0;
+  for (i = mgr->num_entries-1; i >= 0; i--) {
     /* call the registered cleanup handler */
     mgr->entries[i]->handler(mgr->entries[i]->data);
   }
