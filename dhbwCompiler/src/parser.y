@@ -202,7 +202,7 @@ void yyerror (const char *msg)
 	//return 0;
 }
 
-int main(){
-	yyparse();
-	return 0;
-}
+//int main(){
+	//yyparse();
+	//return 0;
+//}

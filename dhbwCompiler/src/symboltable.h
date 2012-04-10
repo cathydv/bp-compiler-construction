@@ -20,19 +20,13 @@ typedef struct symbol {
 
 int exists_Sym(struct Symbol *Sym);
 
-void insert_Sym(char const *name){
-	printf("\n inserting symbol %s \n",name);
-}
+void insert_Sym(char const *name);
 
 struct Symbol* find_Sym();
 
-void debug_printSymbolTable(){
-	printf("\n\n - debug_printAllSymbols - \n\n");
-}
+void debug_printSymbolTable();
 
-init_table(){
-	symbol *head = NULL;
-};
+void init_table();
 
 #endif
 
