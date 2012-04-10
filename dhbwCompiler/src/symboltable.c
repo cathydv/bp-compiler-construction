@@ -46,6 +46,7 @@ void debug_printSymbolTable(){
 	symbol *s = NULL;
 
 	printf("\n\n - debug_printAllSymbols - \n\n");
-	LL_FOREACH(symtable,s)printf("|%d  %s|\n   |\n   v\n ",s->type,s->name);
+
+	LL_FOREACH(symtable,s)printf("|%d  %s| -> ",s->type,s->name);
 }
 

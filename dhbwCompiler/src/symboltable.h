@@ -9,9 +9,22 @@
 #include <stdio.h>
 #include "include/utlist.h"
 
+struct func{
+
+};
+
+struct integ{
+	int value;
+
+};
+
 typedef struct symbol {
     char *name;
     int type;
+    union{
+    	struct func;
+    	struct integ;
+    };
     struct symbol *next;
 } symbol;
 
