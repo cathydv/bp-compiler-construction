@@ -6,21 +6,18 @@
  *  Created on: Apr 3, 2012
  *      Author: NA
  */
-#include<stdio.h>
+#include <stdio.h>
+#include "include/utlist.h"
 
 typedef struct symbol {
     char *name;
-    int size;
-    int isArray;
-    int isFunc;
-    int isParam;
-    struct Symbol *scope;
-    struct symbol *next; /* needed for singly- or doubly-linked lists */
+    int type;
+    struct symbol *next;
 } symbol;
 
-int exists_Sym(struct Symbol *Sym);
+int exists_Sym(char const *name);
 
-void insert_Sym(char const *name);
+void insert_Sym(int type,char const *name);
 
 struct Symbol* find_Sym();
 
