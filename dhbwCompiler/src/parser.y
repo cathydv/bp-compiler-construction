@@ -95,11 +95,11 @@ variable_declaration
 	
 identifier_declaration
      : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {if( ! exists_Sym($1) ) insert_Sym(1,$1);}
+     | ID {pushVar($1);}
      ;
 
 function_definition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN 	stmt_list BRACE_CLOSE {if( ! exists_Sym($2) ) insert_Sym($1,$2);}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN 	stmt_list BRACE_CLOSE {pushFunc($1,$2);}
      | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE 
      ;
 

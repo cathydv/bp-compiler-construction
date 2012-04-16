@@ -13,9 +13,33 @@
 
 symbol *symtable = NULL;
 
-int namecmp(symbol *a, char *b) {
-    return strcmp(a->name,b);
+
+void pushVar(char const *name) {
+	struct symbol *s = NULL;
+	s = (struct symbol*)malloc(sizeof(struct symbol));
+	s->name = (char *) malloc (strlen (name) + 1);
+	s->name = name;
+	s->type = 1;
+	s->var.value = 12;
+	if(!exists_Sym(name))
+		LL_APPEND(symtable,s);
 }
+
+void pushFunc(int type, char const *name){
+	struct symbol *s = NULL;
+	s = (struct symbol*)malloc(sizeof(struct symbol));
+	s->name = (char *) malloc (strlen (name) + 1);
+	s->name = name;
+	s->isFunc = 1;
+	s->type = type;
+	if(!exists_Sym(name))
+		LL_APPEND(symtable,s);
+}
+
+
+
+
+
 
 int exists_Sym(char const *name){
 	symbol *s = NULL;
@@ -30,23 +54,25 @@ int exists_Sym(char const *name){
 	return cnt;
 }
 
-void insert_Sym(int type,char const *name){
-	struct symbol *s = NULL;
-	s = (struct symbol*)malloc(sizeof(struct symbol));
-	s->name = name;
-	s->type = type;
-	LL_APPEND(symtable,s);
-}
-
-struct Symbol* find_Sym(){
-
+struct Symbol* find_Sym(char const *name){
+	symbol *s = NULL;
+	LL_FOREACH(symtable,s)
+		if (! strcmp(name, s->name)){
+			printf("\n found symbol %s",name);
+			return s;
+		}
 }
 
 void debug_printSymbolTable(){
 	symbol *s = NULL;
 
-	printf("\n\n - debug_printAllSymbols - \n\n");
+	printf("\n\n - debug_printAllSymbols - \n\n ");
 
-	LL_FOREACH(symtable,s)printf("|%d  %s| -> ",s->type,s->name);
+	LL_FOREACH(symtable,s){
+	if(!s->isFunc)
+		printf("|type:int value:%d name:%s| \n ",s->var.value,s->name);
+	else
+		printf("|type:%d name:%s| \n",s->type,s->name);
+	}
 }
 

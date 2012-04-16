@@ -9,30 +9,29 @@
 #include <stdio.h>
 #include "include/utlist.h"
 
-struct func{
-
-};
-
-struct integ{
+typedef union{
 	int value;
+}var;
 
-};
+typedef union{
+	int returntype;
+}func;
 
 typedef struct symbol {
     char *name;
     int type;
-    union{
-    	struct func;
-    	struct integ;
-    };
+    int isFunc;
+    var var;
+    func func;
     struct symbol *next;
 } symbol;
 
-int exists_Sym(char const *name);
 
-void insert_Sym(int type,char const *name);
+void pushVar(char const *name);
 
-struct Symbol* find_Sym();
+void pushFunc(int type, char const *name);
+
+struct Symbol* find_Sym(char const *name);
 
 void debug_printSymbolTable();
 

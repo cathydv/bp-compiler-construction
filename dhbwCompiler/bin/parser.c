@@ -1590,14 +1590,14 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 98 "src/parser.y"
-    {if( ! exists_Sym((yyvsp[(1) - (1)].id)) ) insert_Sym(1,(yyvsp[(1) - (1)].id));;}
+    {pushVar((yyvsp[(1) - (1)].id));;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
 #line 102 "src/parser.y"
-    {if( ! exists_Sym((yyvsp[(2) - (7)].id)) ) insert_Sym((yyvsp[(1) - (7)].num),(yyvsp[(2) - (7)].id));;}
+    {pushFunc((yyvsp[(1) - (7)].num),(yyvsp[(2) - (7)].id));;}
     break;
 
   case 56:
