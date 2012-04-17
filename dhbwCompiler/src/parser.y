@@ -99,7 +99,7 @@ identifier_declaration
      ;
 
 function_definition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN 	stmt_list BRACE_CLOSE {pushFunc($1,$2);}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {pushFunc($1,$2);} stmt_list BRACE_CLOSE {resetScope();}
      | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE 
      ;
 

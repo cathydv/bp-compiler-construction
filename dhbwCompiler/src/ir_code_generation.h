@@ -5,14 +5,14 @@
  *      Author: FS
  */
 
-#if ! defined dhbwcc_ir_code_generation.h
-#define dhbwcc_ir_code_generation.h
+#ifndef _DHBWCC_IR_CODE_GENERATION_H
+#define _DHBWCC_IR_CODE_GENERATION_H
 
 enum operator {
 	opDo, opWhile, opGt,
 	opIf, opElse,
 	opLogicalOr, opLogicalAnd, opLogicalNot,
-	opNe, opEq, opGt, opLs, opGtEq, opLsEq,
+	opNe, opEq, /*opGt,*/ opLs, opGtEq, opLsEq,
 	opShiftRight, opShiftLeft,
 	opAdd, opSub, opMul, opDiv, opMinus,
 	opReturn, opReturnParam,
@@ -33,6 +33,7 @@ char* opStrings [] = {
     "MEM_LD", "MEM_ST", "ADDR"
 };
 
+#endif
 
 
 

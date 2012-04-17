@@ -11,6 +11,7 @@
 
 typedef union{
 	int value;
+	struct symbol *scope;
 }var;
 
 typedef union{
@@ -20,7 +21,6 @@ typedef union{
 typedef struct symbol {
     char *name;
     int type;
-    int isFunc;
     var var;
     func func;
     struct symbol *next;
@@ -32,6 +32,8 @@ void pushVar(char const *name);
 void pushFunc(int type, char const *name);
 
 struct Symbol* find_Sym(char const *name);
+
+void resetScope();
 
 void debug_printSymbolTable();
 
