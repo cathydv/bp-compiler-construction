@@ -12,7 +12,7 @@ enum operator {
 	opDo, opWhile, opGt,
 	opIf, opElse,
 	opLogicalOr, opLogicalAnd, opLogicalNot,
-	opNe, opEq, /*opGt,*/ opLs, opGtEq, opLsEq,
+	opNe, opEq, opLs, opGtEq, opLsEq,
 	opShiftRight, opShiftLeft,
 	opAdd, opSub, opMul, opDiv, opMinus,
 	opReturn, opReturnParam,
@@ -27,7 +27,7 @@ char* opStrings [] = {
     "LOGICAL_OR", "LOGICAL_AND", "LOGICAL_NOT",
     "NE", "EQ", "GT", "LS", "GT_EQ", "LS_EQ",
     "SHIFT_RIGHT", "SHIFT_LEFT",
-    "ADD", "SUB", "MUL", "DIV", "Minus",
+    "ADD", "SUB", "MUL", "DIV", "MINUS",
     "RETURN", "RETURN_PARAM",
     "ASSIGN", "CALL_FUNC", "CALL_FUNC_ON_PARAM",
     "MEM_LD", "MEM_ST", "ADDR"
