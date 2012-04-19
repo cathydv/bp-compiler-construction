@@ -16,7 +16,7 @@
 %union{
 	int num;
 	char *id;
-	struct Symbol *Sym;
+	struct symbol *Sym;
 }
 
 %debug
@@ -94,27 +94,27 @@ variable_declaration
      ;
 	
 identifier_declaration
-     : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {pushVar($1);}
+     : identifier_declaration BRACKET_OPEN NUM BRACKET_CLOSE {$1->is.var.isArray = 1;$1->is.var.size = $3;}
+     | ID {$$ = pushVar($1);}
      ;
 
 function_definition
      : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {pushFunc($1,$2);} stmt_list BRACE_CLOSE {resetScope();}
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE 
+     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN {resetScope(); $<Sym>$=pushFunc($1,$2); $<Sym>$->is.func.hasParams = 1; addParam($<Sym>$,$4->is.func.local_table);deleteFunc("-pseudo-");} stmt_list BRACE_CLOSE {resetScope();} 
      ;
 
 function_declaration
-     : type ID PARA_OPEN PARA_CLOSE						
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE		
+     : type ID PARA_OPEN PARA_CLOSE	{$$=pushFunc($1,$2);$$->is.func.isProto=1;resetScope();}					
+     | type ID PARA_OPEN function_parameter_list PARA_CLOSE {resetScope(); $$=pushFunc($1,$2);$$->is.func.hasParams = 1;addParam($$,$4->is.func.local_table);$$->is.func.isProto=1;deleteFunc("-pseudo-");resetScope();}		
      ;
 
 function_parameter_list
-     : function_parameter						
-     | function_parameter_list COMMA function_parameter		
+     : {$<Sym>$=pushFunc(0,"-pseudo-");}function_parameter				
+     | function_parameter_list COMMA function_parameter	{$$=$1;}	
      ;
 	
 function_parameter
-     : type identifier_declaration
+     : type identifier_declaration {$$=$2;}
      ;
 
 stmt_list
@@ -201,8 +201,3 @@ void yyerror (const char *msg)
 	printf("ERROR: %s\n", msg);
 	//return 0;
 }
-
-//int main(){
-	//yyparse();
-	//return 0;
-//}

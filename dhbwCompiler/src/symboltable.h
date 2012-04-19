@@ -9,29 +9,43 @@
 #include <stdio.h>
 #include "include/utlist.h"
 
-typedef union{
-	int value;
+struct variable{
+	int type;
+	int isArray;
+	int size;
 	struct symbol *scope;
-}var;
+};
 
-typedef union{
+struct function{
 	int returntype;
-}func;
+	int isProto;
+	int hasParams;
+	struct symbol *local_table;
+	struct symbol *param_list;
+};
 
 typedef struct symbol {
     char *name;
-    int type;
-    var var;
-    func func;
+    int isFunc;
+    union{
+    	struct variable var;
+    	struct function func;
+    }is;
     struct symbol *next;
 } symbol;
 
 
-void pushVar(char const *name);
+struct symbol *pushVar(char const *name);
 
-void pushFunc(int type, char const *name);
+struct symbol *pushFunc(int type, char const *name);
 
 struct Symbol* find_Sym(char const *name);
+
+void deleteFunc(char const *name);
+
+void addParam(struct symbol* function,struct symbol* params);
+
+void renameFunc(struct symbol* function,char const *name);
 
 void resetScope();
 

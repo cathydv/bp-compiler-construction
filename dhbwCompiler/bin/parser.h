@@ -88,7 +88,7 @@ typedef union YYSTYPE
 
 	int num;
 	char *id;
-	struct Symbol *Sym;
+	struct symbol *Sym;
 
 
 
