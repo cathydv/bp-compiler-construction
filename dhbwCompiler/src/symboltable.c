@@ -11,69 +11,116 @@
 #include <string.h>
 #include "include/utlist.h"
 
-symbol *symtable = NULL;
-symbol *currentScope = NULL;
+symbol *symtable = NULL; //points to global symbol table
+symbol *currentScope = NULL; //points to current function or NULL if scope is global
 
+int DEBUG = 0; // set 1 for printf-output
+
+/**
+ * @brief searches the element "name" in global symbol table
+ * @param name of the global symbol
+ * @return reference to the global symbol or NULL if does not exist
+ */
 symbol *exists_Sym_glob(char const *name) {
 	symbol *s = NULL;
-	printf("searching for symbol \"%s\" in global table\n", name);
+
+	if (DEBUG)
+		printf("searching for symbol \"%s\" in global table\n", name);
+
 	if (symtable == NULL) {
-		printf("global symboltable is empty\n");
+		if (DEBUG)
+			printf("global symboltable is empty\n");
 		return NULL;
 	}
 
 	LL_FOREACH(symtable,s) {
 		if (!strcmp(name, s->name)) {
-			printf("declaration of symbol \"%s\" found\n", name);
-			return s;
+			return (s);
 		}
 	}
-	printf("cannot find a symbol with the same declaration\n");
+
+	if (DEBUG)
+		printf("cannot find a symbol with the same identifier\n");
+
 	return NULL;
 }
 
+/**
+ * @brief searches the element "name" in the local symbol table of the function referenced in currentScope
+ * @param name of the local symbol
+ * @return reference to the local symbol or NULL if does not exist
+ */
 symbol * exists_Sym_loc(char const *name) {
 	symbol *s = NULL;
-	printf("searching for symbol \"%s\" in table %s\n", name,
-			currentScope->name);
+	if (DEBUG)
+		printf("searching for symbol \"%s\" in table \"%s\"\n", name,
+				currentScope->name);
 	if (currentScope->is.func.local_table == NULL) {
-		printf("local table is empty\n");
+		if (DEBUG)
+			printf("local table is empty\n");
 		return NULL;
 	}
 
 	LL_FOREACH(currentScope->is.func.local_table,s) {
 		if (!strcmp(name, s->name)) {
 			printf("ERROR	--	multiple declaration of variable \"%s\n", name);
-			return s;
+			return (s);
+		}
+	}
+	if (DEBUG)
+		printf("cannot find a symbol with the same identifier\n");
+	return NULL;
+}
+
+/**
+ * @brief searches the element "name" in the parameter list of the function referenced in currentScope
+ * @param name of the local symbol
+ * @return reference to the parameter symbol or NULL if does not exist
+ */
+symbol * exists_Param(char const *name) {
+	symbol *s = NULL;
+	if (DEBUG)
+		printf("searching for param \"%s\" in table \"%s\"\n", name,
+				currentScope->name);
+	if (currentScope->is.func.param_list == NULL) {
+		if (DEBUG)
+			printf("parameter list is empty\n");
+		return NULL;
+	}
+
+	LL_FOREACH(currentScope->is.func.param_list,s) {
+		if (!strcmp(name, s->name)) {
+			printf("ERROR	--	there is already a parameter \"%s\"\n", name);
+			return (s);
 		}
 	}
 
-	printf("cannot find a symbol with the same declaration\n");
-	return NULL;;
+	if (DEBUG)
+		printf("cannot find a parameter with the same identifier\n");
+	return NULL;
 }
 
+/**
+ * @brief deletes the function "name" from global symboltable
+ * @param name of the function
+ */
 void deleteFunc(char const *name) {
 	struct symbol *ref = NULL;
-	struct symbol *del = NULL;
 	ref = exists_Sym_glob(name);
 
 	if (ref != NULL) {
-		printf("deleting function %s\n", ref->name);
+		if (DEBUG)
+			printf("deleting function \"%s\"\n", ref->name);
 		LL_DELETE(symtable, ref);
 	}
-
-//	if (ref != NULL) {
-//		LL_DELETE(ref->is.func.local_table, del);
-//		printf("deleting local table of function %s\n", ref->name);
-//		LL_DELETE(ref->is.func.param_list, del);
-//		printf("deleting param list of function %s\n", ref->name);
-//		printf("deleting function %s\n", ref->name);
-//		LL_DELETE(symtable, del);
-//
-//	}
-
 }
 
+/**
+ * @brief inserts the variable "name" in the global symbol table or the local table of current scope
+ * 		  also checks if the symbol already exists
+ * @param name of the variable
+ * @return reference to the created symbol
+ */
 struct symbol *pushVar(char const *name) {
 	struct symbol *s = NULL;
 	s = (struct symbol*) malloc(sizeof(struct symbol));
@@ -87,20 +134,33 @@ struct symbol *pushVar(char const *name) {
 	if (currentScope == NULL) {
 		if (exists_Sym_glob(name) == NULL) {
 			s->is.var.scope = NULL;
-			printf("appending global variable %s\n", name);
+			if (DEBUG)
+				printf("appending global variable %s\n", name);
 			LL_APPEND(symtable, s);
-			return s;
+			return (s);
+		} else
+			printf("ERROR	--	multiple declaration of variable \"%s\n", name);
+	} else if (exists_Param(name) == NULL) {
+		if (exists_Sym_loc(name) == NULL) {
+			s->is.var.scope = currentScope;
+			if (DEBUG)
+				printf("appending local variable \"%s\" to function \"%s\"\n",
+						name, currentScope->name);
+			LL_APPEND(currentScope->is.func.local_table, s);
+			return (s);
 		}
-	} else if (exists_Sym_loc(name) == NULL) {
-		s->is.var.scope = currentScope;
-		printf("appending local variable %s to function %s\n", name,
-				currentScope->name);
-		LL_APPEND(currentScope->is.func.local_table, s);
-		return s;
 	}
 
+	return NULL;
 }
 
+/**
+ * @brief inserts the variable "name" in the global symbol table
+ * 		  also checks if the symbol already exists
+ * @param returntype of the function
+ * @param name of the function
+ * @return reference to the created symbol
+ */
 struct symbol * pushFunc(int type, char const *name) {
 	struct symbol *s = NULL;
 	struct symbol *ref = NULL;
@@ -110,92 +170,81 @@ struct symbol * pushFunc(int type, char const *name) {
 	s->isFunc = 1;
 	s->is.func.returntype = type;
 	s->is.func.isProto = 0;
-//	printf("identified function %s of type %d\n", s->name,
-//			s->is.func.returntype);
 
 	ref = exists_Sym_glob(name);
 
 	if (ref == NULL) {
+
 		LL_APPEND(symtable, s);
-		printf("appending function %s to global table \n", name);
-		printf(
-				"-----------------------------------------------------------------\n");
+
+		if (DEBUG) {
+			printf("appending function \"%s\" to global table \n", name);
+			printf(
+					"-----------------------------------------------------------------\n");
+		}
+
 		currentScope = s;
-		printf("set current scope to %s\n", currentScope->name);
-		printf(
-				"-----------------------------------------------------------------\n");
-		return s;
+
+		if (DEBUG) {
+			printf("set current scope to %s\n", currentScope->name);
+			printf(
+					"-----------------------------------------------------------------\n");
+		}
+
+		return (s);
 	} else if (ref->is.func.isProto) {
-		printf("found proto %s\n", ref->name);
+		if (DEBUG)
+			printf("found prototype \"%s\"\n", ref->name);
 		ref->is.func.isProto = 0;
 		currentScope = ref;
-		printf("set current scope to %s\n", currentScope->name);
-		printf(
-				"-----------------------------------------------------------------\n");
-		return ref;
+		if (DEBUG) {
+			printf("set current scope to %s\n", currentScope->name);
+			printf(
+					"-----------------------------------------------------------------\n");
+		}
+		return (ref);
 	} else
-		printf("omgomgomg\n");
+		printf("ERROR	--	multiple declaration of variable \"%s\n", name);
 
-	return s;
+	return (s);
 
 }
 
+/**
+ * @brief reset scope to global
+ */
 void resetScope() {
 	currentScope = NULL;
-	printf("reset scope to global\n");
-	printf(
-			"-----------------------------------------------------------------\n");
-}
-
-void addParam(struct symbol* function, struct symbol* params) {
-	struct symbol *el;
-	struct symbol *currentScope;
-	int cnt;
-	int i;
-	cnt = 0;
-	currentScope = function;
-	printf("function %s\n",currentScope->name);
-	LL_FOREACH(params,el){
-		printf("param is %s\n",el->name);
-		cnt = cnt+1;
+	if (DEBUG) {
+		printf("reset scope to global\n");
+		printf(
+				"-----------------------------------------------------------------\n");
 	}
-
-	LL_CONCAT(currentScope->is.func.param_list,params);
-	printf("%s\n",currentScope->is.func.param_list->next->next->name);
-		//printf("first para is %s", currentScope->is.func.param_list->name);
-//	LL_FOREACH(params,el) {
-//		printf("adding param %s to function %s\n", el->name, function->name);
-//		LL_APPEND(function->is.func.param_list, el);
-//	}
-//	LL_FOREACH(function->is.func.param_list,el){
-//		printf("appended %s\n",el->name);
-//	}
-
 }
 
-void renameFunc(struct symbol* function, char const *name) {
-	function->name = (char *) malloc(strlen(name) + 1);
-	function->name = name;
+/**
+ * @brief adds a list of parameters to a function
+ * @param pointer to the function
+ * @param pointer to the parameterlist
+ */
+void addParam(struct symbol* function, struct symbol* params) {
+	if (DEBUG)
+		printf("added parameter list to function \"%s\"",function->name);
+	if (function->is.func.param_list == NULL)
+		LL_CONCAT(function->is.func.param_list, params);
 }
 
-//struct Symbol* find_Sym(char const *name){
-//	symbol *s = NULL;
-//	LL_FOREACH(symtable,s)
-//		if (! strcmp(name, s->name)){
-//			printf("\n found symbol %s",name);
-//			return s;
-//		}
-//}
-
+/**
+ * @brief pretty print of all symbols
+ */
 void debug_printSymbolTable() {
 	symbol *s = NULL;
 	symbol *el = NULL;
-	symbol *p = NULL;
 
 	printf("\n\n\t\t - DEBUG ___ SYMBOL _ TABLE ___ DEBUG - \n\n");
 	printf(
 			"-----------------------------------------------------------------\n");
-	printf("     global \t\t|     local\t\t\tparam\n");
+	printf("     global \t\t|     local\t\t|   param\n");
 	printf(
 			"-----------------------------------------------------------------\n");
 
@@ -222,7 +271,7 @@ void debug_printSymbolTable() {
 			if (s->is.func.hasParams) {
 				LL_FOREACH(s->is.func.param_list,el)
 					printf("\t\t\t\t\t\t|int name:%s|\n", el->name);
-				}
+			}
 		}
 
 		//is global variable

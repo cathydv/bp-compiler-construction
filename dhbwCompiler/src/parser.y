@@ -109,7 +109,7 @@ function_declaration
      ;
 
 function_parameter_list
-     : {$<Sym>$=pushFunc(0,"-pseudo-");}function_parameter				
+     : {$<Sym>$=pushFunc(0,"-pseudo-");}function_parameter
      | function_parameter_list COMMA function_parameter	{$$=$1;}	
      ;
 	

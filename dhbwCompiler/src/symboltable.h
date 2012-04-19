@@ -25,7 +25,7 @@ struct function{
 };
 
 typedef struct symbol {
-    char *name;
+    const char *name;
     int isFunc;
     union{
     	struct variable var;
@@ -34,24 +34,45 @@ typedef struct symbol {
     struct symbol *next;
 } symbol;
 
-
+/**
+ * @brief inserts the variable "name" in the global symbol table or the local table of current scope
+ * 		  also checks if the symbol already exists
+ * @param name of the variable
+ * @return reference to the created symbol
+ */
 struct symbol *pushVar(char const *name);
 
+/**
+ * @brief inserts the variable "name" in the global symbol table
+ * 		  also checks if the symbol already exists
+ * @param returntype of the function
+ * @param name of the function
+ * @return reference to the created symbol
+ */
 struct symbol *pushFunc(int type, char const *name);
 
-struct Symbol* find_Sym(char const *name);
-
+/**
+ * @brief deletes the function "name" from global symboltable
+ * @param name of the function
+ */
 void deleteFunc(char const *name);
 
+/**
+ * @brief adds a list of parameters to a function
+ * @param pointer to the function
+ * @param pointer to the parameterlist
+ */
 void addParam(struct symbol* function,struct symbol* params);
 
-void renameFunc(struct symbol* function,char const *name);
-
+/**
+ * @brief reset scope to global
+ */
 void resetScope();
 
+/**
+ * @brief pretty print of all symbols
+ */
 void debug_printSymbolTable();
-
-void init_table();
 
 #endif
 
