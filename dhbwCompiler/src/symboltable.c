@@ -13,6 +13,7 @@
 
 symbol *symtable = NULL; //points to global symbol table
 symbol *currentScope = NULL; //points to current function or NULL if scope is global
+int symtablelock = 0;
 
 int DEBUG = 0; // set 1 for printf-output
 
@@ -122,32 +123,36 @@ void deleteFunc(char const *name) {
  * @return reference to the created symbol
  */
 struct symbol *pushVar(char const *name) {
-	struct symbol *s = NULL;
-	s = (struct symbol*) malloc(sizeof(struct symbol));
-	s->name = (char *) malloc(strlen(name) + 1);
-	s->name = name;
-	s->isFunc = 0; //s is not a function
-	s->is.var.type = 1; //s is of type int
-	s->is.var.isArray = 0; //s is initialized as normal variable
-	s->is.var.size = 0; //therefore we have no size
+	if (!symtablelock) {
+		struct symbol *s = NULL;
+		s = (struct symbol*) malloc(sizeof(struct symbol));
+		s->name = (char *) malloc(strlen(name) + 1);
+		s->name = name;
+		s->isFunc = 0; //s is not a function
+		s->is.var.type = 1; //s is of type int
+		s->is.var.isArray = 0; //s is initialized as normal variable
+		s->is.var.size = 0; //therefore we have no size
 
-	if (currentScope == NULL) {
-		if (exists_Sym_glob(name) == NULL) {
-			s->is.var.scope = NULL;
-			if (DEBUG)
-				printf("appending global variable %s\n", name);
-			LL_APPEND(symtable, s);
-			return (s);
-		} else
-			printf("ERROR	--	multiple declaration of variable \"%s\n", name);
-	} else if (exists_Param(name) == NULL) {
-		if (exists_Sym_loc(name) == NULL) {
-			s->is.var.scope = currentScope;
-			if (DEBUG)
-				printf("appending local variable \"%s\" to function \"%s\"\n",
-						name, currentScope->name);
-			LL_APPEND(currentScope->is.func.local_table, s);
-			return (s);
+		if (currentScope == NULL) {
+			if (exists_Sym_glob(name) == NULL) {
+				s->is.var.scope = NULL;
+				if (DEBUG)
+					printf("appending global variable %s\n", name);
+				LL_APPEND(symtable, s);
+				return (s);
+			} else
+				printf("ERROR	--	multiple declaration of variable \"%s\n",
+						name);
+		} else if (exists_Param(name) == NULL) {
+			if (exists_Sym_loc(name) == NULL) {
+				s->is.var.scope = currentScope;
+				if (DEBUG)
+					printf(
+							"appending local variable \"%s\" to function \"%s\"\n",
+							name, currentScope->name);
+				LL_APPEND(currentScope->is.func.local_table, s);
+				return (s);
+			}
 		}
 	}
 
@@ -195,6 +200,14 @@ struct symbol * pushFunc(int type, char const *name) {
 	} else if (ref->is.func.isProto) {
 		if (DEBUG)
 			printf("found prototype \"%s\"\n", ref->name);
+
+		if (ref->is.func.hasParams)
+			if (!checkparams(ref, s)) {
+				printf("EROORRRRRRR\n");
+				symtablelock=1;
+				return (ref);
+			}
+
 		ref->is.func.isProto = 0;
 		currentScope = ref;
 		if (DEBUG) {
@@ -204,9 +217,33 @@ struct symbol * pushFunc(int type, char const *name) {
 		}
 		return (ref);
 	} else
-		printf("ERROR	--	multiple declaration of variable \"%s\n", name);
+		printf("ERROR	--	multiple declaration of function \"%s\n", name);
 
 	return (s);
+
+}
+
+int checkparams(struct symbol *s1, struct symbol *s2) {
+	struct symbol *el;
+	int cnt1 = 0;
+	int cnt2 = 0;
+	int check = 1;
+
+	printf("Checking params\n");
+	LL_FOREACH(s1,el)
+		cnt1++;
+	LL_FOREACH(s2,el)
+		cnt2++;
+
+	if (cnt1 != cnt2)
+		return (0);
+
+	for (int i = 0; i < cnt1; i++) {
+		check = !strcmp((s1->is.func.param_list + i)->name,
+				(s2->is.func.param_list + i)->name);
+	}
+
+	return (check);
 
 }
 
@@ -215,6 +252,7 @@ struct symbol * pushFunc(int type, char const *name) {
  */
 void resetScope() {
 	currentScope = NULL;
+	symtablelock = 0;
 	if (DEBUG) {
 		printf("reset scope to global\n");
 		printf(
@@ -229,7 +267,7 @@ void resetScope() {
  */
 void addParam(struct symbol* function, struct symbol* params) {
 	if (DEBUG)
-		printf("added parameter list to function \"%s\"",function->name);
+		printf("added parameter list to function \"%s\"", function->name);
 	if (function->is.func.param_list == NULL)
 		LL_CONCAT(function->is.func.param_list, params);
 }
