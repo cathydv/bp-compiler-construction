@@ -180,8 +180,8 @@ expression								// 0 = "false", nonzero = "true"
      ;
 
 primary
-     : NUM 										{printf("-num-");}
-     | ID  										{printf("-id-");}
+     : NUM 										
+     | ID  										
      ;
 
 function_call

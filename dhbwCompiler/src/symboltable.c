@@ -5,6 +5,7 @@
  *      Author: NA
  */
 
+#include "main.h"
 #include "symboltable.h"
 #include <stdio.h>
 #include <stdlib.h>
