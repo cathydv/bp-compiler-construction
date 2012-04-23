@@ -1,20 +1,19 @@
-void test(int i, int a, int p);
+void test(int a[4], int b, int c);
 
 int main(){
-    int a,s,d,f,g,h,k;
-    int j[4];
-    int e[6];
+    int a,b,c;
+    int x_arr[4];
+    int y_arr[6];
 }
 
-int m[2];
+int array[2];
 
-int q,w,e,r,t,a,s,d;
+int a,b,c;
 
-void test(int i, int p){
-    int q,w,e,r,t,a,s,d;
-    int y,x,c,v,b,n;
+void test(int a[5], int b, int c){
+    int q,w,e;
 }
 
-void blubb(int i,int c){
-    int a,s,d,f,g,h,j;
+void blubb(int a, int b, int c){
+    int a1,a2,a3;
 }

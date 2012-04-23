@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "main.h"
+#include "symboltable.h"
 
 extern FILE *yyin;
 
@@ -282,6 +283,8 @@ int main (int argc, char *argv[]) {
 	do {
 		yyparse();
 	} while (!feof(yyin));
+
+	debug_printSymbolTable();
 
 	fclose (myfile);
 
