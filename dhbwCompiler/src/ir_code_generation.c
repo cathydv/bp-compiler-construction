@@ -19,3 +19,38 @@ struct symbolTemp *irtemp()
 	temp = tempSym(buffer);
 	return (temp);
 }
+
+void genCode (char* param1, char* param2, char* param3, char* param4, char* param5)
+{
+
+}
+
+void addWhile ()
+{
+
+}
+
+void addWhileDo ()
+{
+
+}
+
+void addIf ()
+{
+
+}
+
+void addIfGoTo ()
+{
+
+}
+
+void backpatch ()
+{
+
+}
+
+void addFunc ()
+{
+
+}
