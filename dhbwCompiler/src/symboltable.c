@@ -23,7 +23,7 @@ int DEBUG = 0; // set 1 for printf-output
  * @param name of the global symbol
  * @return reference to the global symbol or NULL if does not exist
  */
-symbol *exists_Sym_glob(char const *name) {
+symbol *exists_Sym_glob(char const *name, int print_err) {
 	symbol *s = NULL;
 
 	if (DEBUG)
@@ -37,6 +37,9 @@ symbol *exists_Sym_glob(char const *name) {
 
 	LL_FOREACH(symtable,s) {
 		if (!strcmp(name, s->name)) {
+			if (print_err)
+				printf("ERROR	--	multiple declaration of variable \"%s\n",
+						name);
 			return (s);
 		}
 	}
@@ -52,7 +55,7 @@ symbol *exists_Sym_glob(char const *name) {
  * @param name of the local symbol
  * @return reference to the local symbol or NULL if does not exist
  */
-symbol * exists_Sym_loc(char const *name) {
+symbol * exists_Sym_loc(char const *name, int print_err) {
 	symbol *s = NULL;
 	if (DEBUG)
 		printf("searching for symbol \"%s\" in table \"%s\"\n", name,
@@ -65,7 +68,9 @@ symbol * exists_Sym_loc(char const *name) {
 
 	LL_FOREACH(currentScope->is.func.local_table,s) {
 		if (!strcmp(name, s->name)) {
-			printf("ERROR	--	multiple declaration of variable \"%s\n", name);
+			if (print_err)
+				printf("ERROR	--	multiple declaration of variable \"%s\n",
+						name);
 			return (s);
 		}
 	}
@@ -116,7 +121,7 @@ int checkparams(struct symbol *s1, struct symbol *s2) {
  * @param name of the local symbol
  * @return reference to the parameter symbol or NULL if does not exist
  */
-symbol * exists_Param(char const *name) {
+symbol * exists_Param(char const *name, int print_err) {
 	symbol *s = NULL;
 	if (DEBUG)
 		printf("searching for param \"%s\" in table \"%s\"\n", name,
@@ -129,7 +134,8 @@ symbol * exists_Param(char const *name) {
 
 	LL_FOREACH(currentScope->is.func.param_list,s) {
 		if (!strcmp(name, s->name)) {
-			printf("ERROR	--	there is already a parameter \"%s\"\n", name);
+			if (print_err)
+				printf("ERROR	--	there is already a parameter \"%s\"\n", name);
 			return (s);
 		}
 	}
@@ -145,7 +151,7 @@ symbol * exists_Param(char const *name) {
  */
 void deleteFunc(char const *name) {
 	struct symbol *ref = NULL;
-	ref = exists_Sym_glob(name);
+	ref = exists_Sym_glob(name, 0);
 
 	if (ref != NULL) {
 		if (DEBUG)
@@ -172,17 +178,15 @@ struct symbol *pushVar(char const *name) {
 		s->is.var.arr_size = 0; //therefore we have no size
 
 		if (currentScope == NULL) {
-			if (exists_Sym_glob(name) == NULL) {
+			if (exists_Sym_glob(name, 1) == NULL) {
 				s->is.var.scope = NULL;
 				if (DEBUG)
 					printf("appending global variable %s\n", name);
 				LL_APPEND(symtable, s);
 				return (s);
-			} else
-				printf("ERROR	--	multiple declaration of variable \"%s\n",
-						name);
-		} else if (exists_Param(name) == NULL) {
-			if (exists_Sym_loc(name) == NULL) {
+			}
+		} else if (exists_Param(name, 1) == NULL) {
+			if (exists_Sym_loc(name, 1) == NULL) {
 				s->is.var.scope = currentScope;
 				if (DEBUG)
 					printf(
@@ -234,7 +238,7 @@ struct symbol * pushFunc(int type, char const *name, struct symbol *paramlist) {
 		deleteFunc("-pseudo-");
 	}
 
-	ref = exists_Sym_glob(name);
+	ref = exists_Sym_glob(name, 1);
 
 	if (ref == NULL) {
 
@@ -302,16 +306,20 @@ void resetScope() {
  * @param name of the symbol
  * @return pointer to the searched symbol or NULL if it does not exist
  */
-struct symbol * findSymbol(char const *name){
-	struct symbol* el;
-	el = exists_Param(name);
-	if(el == NULL){
-		el = exists_Sym_loc(name);
-		if( el == NULL){
-			el = exists_Sym_glob(name);
-		}
+struct symbol * findSymbol(const char *name) {
+	symbol *s = NULL;
+	int suppress_error = 0;
+	if (currentScope == NULL)
+		return (exists_Sym_glob(name, suppress_error));
+	else {
+		if (s == NULL)
+			s = exists_Param(name, suppress_error);
+		if (s == NULL)
+			s = exists_Sym_loc(name, suppress_error);
+		if (s == NULL)
+			s = exists_Sym_glob(name, suppress_error);
 	}
-	return(el);
+	return (s);
 }
 
 /**

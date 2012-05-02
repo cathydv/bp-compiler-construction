@@ -59,7 +59,7 @@ struct symbol * pushFunc(int type, char const *name, struct symbol *paramlist);
  * @param name of the symbol
  * @return pointer to the searched symbol or NULL if it does not exist
  */
-struct symbol * findSymbol(char const *name);
+struct symbol * findSymbol(const char *name);
 
 /**
  * @brief reset scope to global, unlock global symboltable

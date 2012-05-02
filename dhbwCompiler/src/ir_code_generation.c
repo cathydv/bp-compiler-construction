@@ -14,10 +14,10 @@
 //temporäre Variablen (5)
 struct symbolTemp *irtemp()
 {
-	char buffer [5];
-	struct symbol temp;
-	temp = tempSym(buffer);
-	return (temp);
+//	char buffer [5];
+//	struct symbol temp;
+//	temp = tempSym(buffer);
+//	return (temp);
 }
 
 void genCode (char* param1, char* param2, char* param3, char* param4, char* param5)

@@ -72,7 +72,7 @@ program
      ;
 
 program_element_list
-     : program_element_list program_element //{ debug_printSymbolTable();} 	
+     : program_element_list program_element 
      | program_element 				
      ;
 
