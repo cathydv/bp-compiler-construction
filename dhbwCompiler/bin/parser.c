@@ -1584,7 +1584,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 97 "src/parser.y"
-    {(yyvsp[(1) - (4)].Sym)->is.var.isArray = 1;(yyvsp[(1) - (4)].Sym)->is.var.size = (yyvsp[(3) - (4)].num);;}
+    {(yyvsp[(1) - (4)].Sym)->is.var.isArray = 1;(yyvsp[(1) - (4)].Sym)->is.var.arr_size = (yyvsp[(3) - (4)].num);;}
     break;
 
   case 14:
